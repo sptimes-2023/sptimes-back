@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.service.sptimesback.user.mapper.UserMapper">
+
+  <!-- 회원 등록 -->
+  <update id="update" parameterType="com.service.sptimesback.user.dto.UserDto">
+    UPDATE users
+    SET
+    <if test="passwd != null and !''.equals(passwd)">
+      passwd = #{passwd},
+    </if>
+    username = #{nickname},
+    email = #{email},
+    updated_at = now()
+    WHERE userid = #{userid};
+  </update>
+
+  <!-- 회원 조회 -->
+  <insert id="save" parameterType="com.service.sptimesback.user.dto.UserDto" >
+    INSERT INTO users
+    (userid, passwd, username, email,created_at,  updated_at)
+    VALUES(#{userid}, #{passwd}, #{nickname}, #{email}, now(), now());
+
+    <!--사용자 기록 등록 확인하기 위한 select 문 -->
+    <selectKey keyProperty="id" resultType="int" order="AFTER">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+  </insert>
+
+  <select id="findByEmail" parameterType="String" resultType="com.service.sptimesback.user.dto.UserDto">
+    SELECT userid,
+    passwd,
+    username nickname,
+    email,
+    created_at createdAt,
+    updated_at updatedAt
+    FROM users
+    WHERE userid = #{email}
+  </select>
+
+  <select id="getList" resultType="com.service.sptimesback.user.dto.UserDto">
+    SELECT userid,
+    passwd,
+    username nickname,
+    email,
+    created_at createdAt,
+    updated_at updatedAt
+    from users
+  </select>
+
+  <select id="getTotal" resultType="int">
+    SELECT COUNT(*) total
+    from users
+  </select>
+
+  <update id="updatePassword" parameterType="com.service.sptimesback.user.dto.UserDto">
+    UPDATE users
+    SET passwd = #{passwd},
+    WHERE userid = #{userid};
+  </update>
+
+  <delete id="delete" parameterType="com.service.sptimesback.user.dto.UserDto">
+    delete FROM users
+    WHERE userid = #{userid}
+  </delete>
+</mapper>
